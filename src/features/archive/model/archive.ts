@@ -1,14 +1,23 @@
 import type { Workspace, WorldDocument } from "../../../shared/document";
+import { resolvePlayerPosition } from "../../player/lib/spawn";
 import { writeWorld, readWorld, downloadWorld } from "../lib/storage";
 import { decode } from "../lib/codec";
-function install(s: Workspace, doc: WorldDocument) {
+export function installWorld(s: Workspace, doc: WorldDocument) {
+  // Restoring an older save must respect the current, larger player volume.
+  // Validation happens before the world is swapped in, so a bad position can
+  // never leave the workspace half-loaded.
+  const spawn = resolvePlayerPosition(doc, doc.player);
   const revision = s.doc.revision + 1;
   s.doc = doc;
+  s.doc.player = { ...spawn.position };
   s.doc.revision = revision;
   s.dirty = false;
   s.mode = "build";
+  s.stance = spawn.stance;
   s.savedAt = null;
-  s.message = "世界已载入";
+  s.message = spawn.reason
+    ? `世界已载入；${spawn.reason}`
+    : "世界已载入";
 }
 export function save(s: Workspace) {
   try {
@@ -21,7 +30,7 @@ export function save(s: Workspace) {
 }
 export function load(s: Workspace) {
   try {
-    install(s, readWorld());
+    installWorld(s, readWorld());
   } catch (e) {
     s.message = (e as Error).message;
   }
@@ -32,7 +41,7 @@ export function exportWorld(s: Workspace) {
 }
 export async function importWorld(s: Workspace, file: File) {
   try {
-    install(s, decode(await file.text()));
+    installWorld(s, decode(await file.text()));
   } catch (e) {
     s.message = (e as Error).message;
   }

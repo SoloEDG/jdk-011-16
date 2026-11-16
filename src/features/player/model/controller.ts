@@ -6,13 +6,26 @@ export function attachPlayer(s: Workspace) {
   const down = (e: KeyboardEvent) => {
     if ((e.target as HTMLElement).matches("input,textarea")) return;
     if (
-      ["KeyW", "KeyA", "KeyS", "KeyD", "Space"].includes(e.code) &&
+      [
+        "KeyW",
+        "KeyA",
+        "KeyS",
+        "KeyD",
+        "Space",
+        "KeyC",
+        "ShiftLeft",
+        "ShiftRight",
+      ].includes(e.code) &&
       s.mode === "walk"
     ) {
       e.preventDefault();
       keys.add(e.code);
     }
   };
+  // Keys released while the UI has focus (e.g. after toggling modes) must not
+  // linger, otherwise the character keeps walking after focus returns. Shift can
+  // be released in another window, so a blurred window starts clean instead of
+  // leaving the character stuck sprinting or crouched.
   const up = (e: KeyboardEvent) => keys.delete(e.code);
   const blur = () => keys.clear();
   window.addEventListener("keydown", down);

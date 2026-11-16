@@ -10,11 +10,3 @@ export function summarize(doc: WorldDocument): WorldSummary {
     materials: new Set(b.map((v) => v.material)).size,
   };
 }
-export function overlapsPlayer(p: Vec3, player: Vec3) {
-  return (
-    Math.abs(p.x + 0.5 - player.x) < 0.78 &&
-    Math.abs(p.z + 0.5 - player.z) < 0.78 &&
-    p.y < player.y + 1.7 &&
-    p.y + 1 > player.y
-  );
-}

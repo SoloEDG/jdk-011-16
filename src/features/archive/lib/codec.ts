@@ -1,5 +1,6 @@
 import type { WorldDocument } from "../../../shared/document";
 import { inside, key } from "../../../shared/document";
+import { WORLD_MAX, WORLD_MIN } from "../../../shared/body";
 import { materials } from "../../../shared/materials";
 export function encode(doc: WorldDocument) {
   return JSON.stringify(doc);
@@ -31,6 +32,17 @@ export function decode(raw: string): WorldDocument {
       throw Error("物品栏数据无效");
   if (![d.player.x, d.player.y, d.player.z].every(Number.isFinite))
     throw Error("角色坐标无效");
+  // The saved point is repaired after decoding, but coordinates clearly outside
+  // the world can never be a usable position and indicate a corrupt file.
+  if (
+    d.player.x < WORLD_MIN - 4 ||
+    d.player.x > WORLD_MAX + 4 ||
+    d.player.z < WORLD_MIN - 4 ||
+    d.player.z > WORLD_MAX + 4 ||
+    d.player.y < -8 ||
+    d.player.y > 24
+  )
+    throw Error("角色坐标超出世界范围");
   if (!Number.isInteger(d.revision) || d.revision < 0)
     throw Error("世界版本无效");
   return d;

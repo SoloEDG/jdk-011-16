@@ -142,7 +142,7 @@ function fullscreen() {
             <p>
               单击放置或拆除 · 拖动旋转视角<br />右键拖动平移 · 滚轮缩放<br />R
               选择两个角点 · Esc 取消选择<br />Tab 切换行走 · WASD 移动 ·
-              空格跳跃
+              空格跳跃<br />Shift 冲刺 · C 蹲下过矮门 · 行走中也能放置方块
             </p>
             <button class="soft" @click="help = false">开始建造</button>
           </div>

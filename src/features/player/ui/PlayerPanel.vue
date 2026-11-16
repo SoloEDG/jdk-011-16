@@ -17,7 +17,8 @@ defineEmits<{ toggle: [] }>();
         ><small
           >X {{ state.doc.player.x.toFixed(1) }} &nbsp; Y
           {{ state.doc.player.y.toFixed(1) }} &nbsp; Z
-          {{ state.doc.player.z.toFixed(1) }}</small
+          {{ state.doc.player.z.toFixed(1) }} &nbsp;
+          {{ state.stance === "crouch" ? "蹲伏" : "站立" }}</small
         >
       </div>
       <i class="status-dot"></i>
@@ -29,6 +30,9 @@ defineEmits<{ toggle: [] }>();
       {{ state.mode === "walk" ? "返回建造模式" : "进入行走模式" }}
       <span>Tab</span>
     </button>
-    <p class="small muted">W A S D 移动 · 空格跳跃</p>
+    <p class="small muted">
+      W A S D 移动 · 空格跳跃 · Shift 冲刺<br />按住 C 蹲下 ·
+      一格台阶自动跨越
+    </p>
   </section>
 </template>

@@ -81,14 +81,30 @@ export function mountScene(
     new THREE.BoxGeometry(0.55, 0.95, 0.38),
     new THREE.MeshStandardMaterial({ color: "#df8d4d" }),
   );
-  body.position.y = 0.7;
   const head = new THREE.Mesh(
     new THREE.BoxGeometry(0.46, 0.46, 0.46),
     new THREE.MeshStandardMaterial({ color: "#f1ceac" }),
   );
-  head.position.y = 1.4;
   avatar.add(body, head);
   scene.add(avatar);
+  // Initial pose must match the resting (standing) mesh layout above.
+  body.position.y = 0.7;
+  head.position.y = 1.4;
+  /** The avatar compresses with the collision height so a crouch reads visually. */
+  let pose: "stand" | "crouch" = "stand";
+  function poseAvatar(stance: "stand" | "crouch") {
+    if (stance === pose) return;
+    pose = stance;
+    if (stance === "crouch") {
+      body.scale.y = 0.55;
+      body.position.y = 0.26;
+      head.position.y = 0.68;
+    } else {
+      body.scale.y = 1;
+      body.position.y = 0.7;
+      head.position.y = 1.4;
+    }
+  }
   const ray = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
   let hit: SceneHit | null = null;
@@ -118,12 +134,10 @@ export function mountScene(
     down = { x: e.clientX, y: e.clientY };
   };
   const click = (e: PointerEvent) => {
-    if (
-      e.button === 0 &&
-      Math.hypot(e.clientX - down.x, e.clientY - down.y) < 5 &&
-      hit &&
-      state.mode === "build"
-    )
+    // Building stays available in both modes; a click that would intersect the
+    // character's body is rejected by the edit command with an explicit message
+    // instead of being silently ignored.
+    if (e.button === 0 && Math.hypot(e.clientX - down.x, e.clientY - down.y) < 5 && hit)
       onHit(hit);
   };
   renderer.domElement.addEventListener("pointermove", move);
@@ -153,6 +167,7 @@ export function mountScene(
       state.doc.player.y,
       state.doc.player.z,
     );
+    poseAvatar(state.stance);
     if (state.region) {
       const { a, b } = state.region;
       region.visible = true;

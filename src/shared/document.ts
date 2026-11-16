@@ -21,6 +21,8 @@ export interface Region {
   b: Vec3;
 }
 export type Tool = "place" | "remove" | "select";
+/** Current posture of the character. Crouching shrinks its collision volume. */
+export type Stance = "stand" | "crouch";
 export interface Workspace {
   doc: WorldDocument;
   material: MaterialId;
@@ -30,6 +32,7 @@ export interface Workspace {
   message: string;
   dirty: boolean;
   mode: "build" | "walk";
+  stance: Stance;
   savedAt: string | null;
 }
 export const key = (p: Vec3) => `${p.x},${p.y},${p.z}`;

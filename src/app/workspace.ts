@@ -14,6 +14,7 @@ export function createWorkspace() {
     message: "欢迎来到方屿，开始建造你的世界",
     dirty: false,
     mode: "build",
+    stance: "stand",
     savedAt: null,
   });
 }
